@@ -32,3 +32,13 @@ export async function deleteLocalFiles(files:Array<string>){
         fs.unlinkSync(file);
     }
 }
+
+// Returns true if url matches the regEx
+// INPUTS
+//    inputURL: string - a publicly accessible url to an image file
+// RETURNS 
+//    a boolean indicating if inputUrl matches the image URL regular expression. 
+export const isValidImageUrl = (inputUrl: string) : boolean => {
+    const ruleExpression = /^(http(s?):)([/|.|\w|\s|-])*\.(?:bmp|gif|jpeg|jpg|png|tiff)$/g
+    return ruleExpression.test(inputUrl)
+}
