@@ -1,6 +1,8 @@
-import express from 'express';
 import bodyParser from 'body-parser';
-import {filterImageFromURL, deleteLocalFiles} from './util/util';
+import express from 'express';
+import http from 'http'
+import url from 'url'
+import {deleteLocalFiles, filterImageFromURL, isValidImageUrl} from './util/util';
 
 (async () => {
 
@@ -17,7 +19,6 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   // GET /filteredimage?image_url={{URL}}
   // endpoint to filter an image from a public url.
   // IT SHOULD
-  //    1
   //    1. validate the image_url query
   //    2. call filterImageFromURL(image_url) to filter the image
   //    3. send the resulting file in the response
@@ -28,7 +29,41 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   //   the filtered image file [!!TIP res.sendFile(filteredpath); might be useful]
 
   /**************************************************************************** */
+  
+  app.get(`/filteredimage`, async (req, res) => {
+    const { image_url } = req.query
+    
+    if(!image_url){
+      return res.status(400).send({ 
+        errors: [{ 
+          message: 'image_url not provided. Try GET /filteredimage?image_url={{}}'}
+        ]
+      })
+    }
+    
+    if(!isValidImageUrl(image_url)){
+      return res.status(422).send({
+        errors: [{
+          message: 'provided url doesn\'t seem to have a supported file extension. Accepted image formats are [bmp|gif|jpeg|jpg|png|tiff]'
+        }]
+      })
+    }
 
+    let filteredImage: string
+    try {
+      filteredImage = await filterImageFromURL(image_url)
+    } catch ( error ){
+      return res.status(422).send({
+        errors: [{
+          message: `image could not be processed. ${error.message}`
+        }]
+      })
+    }
+    res.on('finish', async () => {
+     await deleteLocalFiles([filteredImage])
+    })
+    return res.sendFile(filteredImage)
+  })
   //! END @TODO1
   
   // Root Endpoint
@@ -36,7 +71,6 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   app.get( "/", async ( req, res ) => {
     res.send("try GET /filteredimage?image_url={{}}")
   } );
-  
 
   // Start the Server
   app.listen( port, () => {
