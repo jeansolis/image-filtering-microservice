@@ -41,7 +41,7 @@ import {deleteLocalFiles, filterImageFromURL, isValidImageUrl} from './util/util
     let filteredImage: string
     try {
       filteredImage = await filterImageFromURL(image_url)
-    } catch ( error ){
+    } catch (error) {
       return res.status(422).send({
         errors: [{
           message: `image could not be processed. ${error.message}`
@@ -49,7 +49,7 @@ import {deleteLocalFiles, filterImageFromURL, isValidImageUrl} from './util/util
       })
     }
     res.on('finish', async () => {
-     await deleteLocalFiles([filteredImage])
+      deleteLocalFiles([filteredImage])
     })
     return res.sendFile(filteredImage)
   })
