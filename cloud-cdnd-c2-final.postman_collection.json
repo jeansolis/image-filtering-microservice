@@ -63,7 +63,7 @@
 	"variable": [
 		{
 			"key": "HOST",
-			"value": "localhost:8082"
+			"value": "image-filtering-ms-jeansolis-dev.eu-north-1.elasticbeanstalk.com"
 		},
 		{
 			"key": "TOKEN",
