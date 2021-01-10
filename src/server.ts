@@ -8,6 +8,10 @@ import {
   isValidImageUrl,
 } from "./util/util";
 
+interface GetFilteredImageQueryParams {
+  image_url: string
+}
+
 (async () => {
   // Init the Express application
   const app = express();
@@ -55,7 +59,7 @@ import {
     `/filteredimage`,
     requireAuth,
     async (req, res) => {
-      const { image_url } = req.query;
+      const { image_url } : GetFilteredImageQueryParams = req.query;
 
       if (!image_url) {
         return res.status(400).send({
